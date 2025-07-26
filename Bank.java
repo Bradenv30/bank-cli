@@ -54,6 +54,15 @@ public class Bank
         return currentUser.getCurrentFunds();
     }
 
+    public double getIncome(){
+        return currentUser.getIncome();
+    }
+
+    public void setIncome(double amount){
+        currentUser.setIncome(amount);
+    }
+    
+
     public void registerSavings(String id, String name, double balance){
         SavingsAccount savings = new SavingsAccount(id, name, balance);
         currentUser.addAccount(savings);
@@ -88,11 +97,13 @@ public class Bank
     public void depositFunds(String type, double amount){
         Account account = currentUser.getAccountType(type);
         account.deposit(amount);
+        currentUser.subtractFunds(amount);
     }
 
     public void withdrawFunds(String type, double amount){
         Account account = currentUser.getAccountType(type);
         account.withdraw(amount);
+        currentUser.addToFunds(amount);
     }
 
     public void transferFunds(String from, String to, double amount){

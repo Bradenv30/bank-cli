@@ -1,18 +1,21 @@
 //BankPortal gets user input and routes to different CLI views. It acts as a controller/view.
 //Only Bank has the methods to actually use the input for meaningful action, so all BankPortal can do is call Bank methods
-
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BankPortal 
 {
     Scanner myObj = new Scanner(System.in);
     private Bank bank;
+    ArrayList<String> accountTypes = new ArrayList<>();
+    ArrayList<String> possibleAccounts = new ArrayList<>(); 
 
     public BankPortal(Bank bank) {
         this.bank = bank;
     }
 
-    public void run(){
+
+    public void start(){
         System.out.println("Welcome!");
         userMenu();
     }
@@ -40,16 +43,19 @@ public class BankPortal
             String input = myObj.nextLine();
             double salary = Double.parseDouble(input);
             bank.registerUser(userName, pincode, salary);
-            bank.registerChecking("0", "checking", 0);
-            bank.registerSavings("0", "savings", 0);
-            bank.registerCredit("0", "credit", 0);
+            bank.registerChecking("0", "Checking Account", 0);
+            accountTypes.add("Checking Account");
+            bank.registerSavings("0", "Savings Account", 0);
+            accountTypes.add("Savings Account");
+            bank.registerCredit("0", "Credit Account", 0);
+            accountTypes.add("Credit Account");
+
             System.out.println("Registration Successful. Welcome " + userName + "!");
             System.out.println("");
             dashboard();
         }
 
         public void dashboard() {
-            System.out.println("");
             System.out.println(bank.printName() + "'s Dashboard");
             System.out.println("You have $" + bank.getFunds() + " to deposit into your accounts.");
             System.out.println();
@@ -59,7 +65,9 @@ public class BankPortal
             System.out.println("3. Credit Account");
             System.out.println("4. Advance Month");
             System.out.println("5. Edit Income (Takes effect next month)");
+            System.out.println("6. View Account Details");
             System.out.println("0. Exit");
+            
 
             String option = myObj.nextLine();
 
@@ -69,6 +77,7 @@ public class BankPortal
                 case "3" -> creditAccountPage();
                 case "4" -> advanceMonth();
                 case "5" -> editIncomePage();
+                case "6" -> printDetails();
                 case "0" -> System.out.println("Goodbye!");
             }
         }
@@ -87,9 +96,9 @@ public class BankPortal
             String option = myObj.nextLine();
 
             switch (option) {
-                case "1" -> deposit("Savings Account");
-                case "2" -> withdraw("Savings Account");
-                case "3" -> transfer("Saving Account");
+                case "1" -> deposit("Savings Account", this::savingsAccountPage);
+                case "2" -> withdraw("Savings Account", this::savingsAccountPage);
+                case "3" -> transfer("Savings Account", this::savingsAccountPage);
                 case "0" -> dashboard();
             }
         }
@@ -108,9 +117,9 @@ public class BankPortal
             String option = myObj.nextLine();
 
             switch (option) {
-                case "1" -> deposit("Checking Account");
-                case "2" -> withdraw("Checking Account");
-                case "3" -> transfer("Checking Account");
+                case "1" -> deposit("Checking Account", this::checkingAccountPage);
+                case "2" -> withdraw("Checking Account", this::checkingAccountPage);
+                case "3" -> transfer("Checking Account", this::checkingAccountPage);
                 case "0" -> dashboard();
             }
         }
@@ -130,34 +139,57 @@ public class BankPortal
 
             String option = myObj.nextLine();
             switch (option) {
-                case "1" -> deposit("Credit Account");
-                case "2" -> withdraw("Credit Account");
-                case "3" -> transfer("Credit Account");
+                case "1" -> deposit("Credit Account", this::creditAccountPage);
+                case "2" -> withdraw("Credit Account", this::creditAccountPage);
+                case "3" -> transfer("Credit Account", this::creditAccountPage);
                 case "0" -> dashboard();
             }
-
+            
         }
 
 
-        public void deposit(String type){
+        public void deposit(String type, Runnable page){
             System.out.println("Enter the amount you would like to deposit: ");
             String input = myObj.nextLine();
             double funds = Double.parseDouble(input);
             bank.depositFunds(type, funds);
+            page.run();
             //need to figure out what account it is, and call the proper method. same for the other 2. not making a method for each type
         }
 
-        public void withdraw(String type){
+        public void withdraw(String type, Runnable page){
             System.out.println("Enter the amount you would like to withdraw: ");
             String input = myObj.nextLine();
             double funds = Double.parseDouble(input);
             bank.withdrawFunds(type, funds);
+            page.run();
+
         }
 
-        public void transfer(String type){
-            System.out.println("Choose the account you are transfering to: ");
+        public void transfer(String current, Runnable page){
+            System.out.println("\nChoose the account you are transfering to: ");
+            int index = 1;
+            for (String acc : accountTypes){
+                if (current.equals(acc)){
+                    continue;
+                } 
+                System.out.println(index + ". " + acc);
+                possibleAccounts.add(acc);
+                index++;
+            }
+            int choice = Integer.parseInt(myObj.nextLine());
+            String destination = possibleAccounts.get(choice - 1);
+
+
+            System.out.println("Enter the amount you would like to transfer: ");
+            String input = myObj.nextLine();
+            double amount = Double.parseDouble(input);
+            bank.transferFunds(current, destination, amount);
+            page.run();
+            }
+
             //extract variables from user input, where they want to transfer to and how much, call trasnfer method using them
-        }
+        
 
 
 
@@ -167,7 +199,22 @@ public class BankPortal
         }
 
         public void editIncomePage(){
-            //
+            System.out.println("Your current income is " + bank.getIncome() + ".");
+            System.out.print("What is your new income? ");
+            String input = myObj.nextLine();
+            double newIncome = Double.parseDouble(input);
+            bank.setIncome(newIncome);
+            dashboard();
+
+        }
+
+        public void printDetails(){
+            System.out.println("");
+            System.out.println("User: " + bank.printName());
+            System.out.println("Savings Account: $" + bank.getSavingsMoney());
+            System.out.println("Checking Account: $" + bank.getCheckingMoney());
+            System.out.println("Credit Account: $" + bank.getCreditMoney());
+            dashboard();
         }
     }
 

@@ -38,6 +38,14 @@ public double getCurrentFunds() {
     return currentFunds;
 }
 
+public void addToFunds(double amount){
+    currentFunds += amount;
+}
+
+public void subtractFunds(double amount){
+    currentFunds -= amount;
+}
+
 public ArrayList<Account> getAccounts(){
     return accounts;
 }
