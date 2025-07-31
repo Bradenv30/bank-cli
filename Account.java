@@ -1,3 +1,6 @@
+
+import java.util.UUID;
+
 public abstract class Account
 {
     protected String id;
@@ -5,8 +8,8 @@ public abstract class Account
     protected double balance;
     
 
-    public Account(String id, String name, double balance){
-        this.id = id;
+    public Account(String name, double balance){
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.balance = balance;
     }    

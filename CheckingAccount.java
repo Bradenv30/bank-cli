@@ -7,8 +7,8 @@ public class CheckingAccount extends Account implements Transferable
 
 
 
-     public CheckingAccount(String id, String name, double balance){
-        super(id, name, balance);
+     public CheckingAccount(String name, double balance){
+        super(name, balance);
     }    
 
 
@@ -35,13 +35,19 @@ public class CheckingAccount extends Account implements Transferable
         return "Checking Account";
     }
 
+    public String getFormattedChecking(){
+        return Utils.formatMoney(balance);
+    }
+
     @Override
-    public void transferTo(Account target, double amount) {
+    public boolean transferTo(Account target, double amount) {
         if ((balance - amount) >= overdraftLimit && amount > 0 ) {
         balance -= amount;
         target.balance += amount;
+        return true;
         } else {
-            System.out.println("Unable to complete transfer");
+            System.out.println("Unable to transfer funds.");
+            return false;
         }
  }
 }

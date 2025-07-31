@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class User {
 
- private String id = "1";
+ private String id;
  private String name;
  private String pin;
  private double income;
@@ -10,6 +11,7 @@ public class User {
  private ArrayList<Account> accounts;
 
 public User(String name, String pin, double income){  
+    this.id = UUID.randomUUID().toString();
     this.name = name;
     this.pin = pin;
     this.income = income;
@@ -83,9 +85,15 @@ public void addAccount(Account account){
     accounts.add(account);
 }
 
-// public void closeAccount(Account account){
-//     accounts.remove(account);
-// }
+public Account getAccountById(String id){
+    for (Account acc : accounts) {
+        if (acc.getId().equals(id)) {
+            return acc;
+        }
+    }
+    return null;
+}
+
 
 public void monthly(){
     for (Account account : accounts){
@@ -94,10 +102,19 @@ public void monthly(){
     addIncome(income);
 }
 
+public String getFormattedIncome(){
+    return Utils.formatMoney(income);
+}
+
+public String getFormattedFunds(){
+    return Utils.formatMoney(currentFunds);
+}
+
 public void printInfo() {
     System.out.println("Name: " + name);
     System.out.println("PIN: " + pin);
-    System.out.println("Income: $" + String.format("%.2f", income));
+    System.out.println("Income: $" + getFormattedIncome());
+    System.out.println("Available Funds: $" + getFormattedFunds());
 }
 
 
