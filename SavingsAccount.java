@@ -1,35 +1,36 @@
-public class SavingsAccount extends Account implements Transferable 
-{
 
-private final double interestRate = 0.004;
+public class SavingsAccount extends Account {
 
-    public SavingsAccount(String name, double balance){
+    private static final long serialVersionUID = 1L;
+    private final double interestRate = 0.004;
+
+    public SavingsAccount(String name, double balance) {
         super(name, balance);
-    }    
+    }
 
     public void deposit(double amount) {
-    if (amount > 0) {
-    balance += amount;
-    }
+        if (amount > 0) {
+            balance += amount;
+        }
     }
 
     public void withdraw(double amount) {
-        if (amount <= balance && amount > 0){
-        balance -= amount;
+        if (amount <= balance && amount > 0) {
+            balance -= amount;
         } else {
             System.out.println("Insufficient Funds");
         }
     }
 
-    public void applyMonthly(){
+    public void applyMonthly() {
         balance += balance * interestRate;
     }
 
-    public String getAccountType(){
+    public String getAccountType() {
         return "Savings Account";
     }
 
-    public double getSavings(){
+    public double getSavings() {
         return balance;
     }
 
@@ -40,14 +41,13 @@ private final double interestRate = 0.004;
     @Override
     public boolean transferTo(Account target, double amount) {
         if (amount <= balance && amount > 0) {
-        balance -= amount;
-        target.balance += amount;
-        return true;
+            balance -= amount;
+            target.balance += amount;
+            return true;
         } else {
             System.out.println("Unable to transfer funds.");
             return false;
         }
- }
-
+    }
 
 }
